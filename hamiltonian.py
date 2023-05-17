@@ -39,12 +39,13 @@ tpp_nn_hop_dir = ['UR','UL','DL','DR']
 
 def set_tpd_tpp(Norb,tpd,tpp,pds,pdp,pps,ppp):
     # dxz and dyz has no tpd hopping
-    if pam.Norb==7:
+    
+    if pam.Norb==7 or pam.Norb==4:
         tpd_nn_hop_dir = {'d3z2r2': ['L','R','U','D'],\
                           'dx2y2' : ['L','R','U','D'],\
                           'px'    : ['L','R'],\
                           'py'    : ['U','D']}
-    elif pam.Norb==9 or pam.Norb==10:
+    elif pam.Norb==9 or pam.Norb==10 or pam.Norb==4:
         tpd_nn_hop_dir = {'d3z2r2': ['L','R','U','D'],\
                           'dx2y2' : ['L','R','U','D'],\
                           'dxy'   : ['L','R','U','D'],\
@@ -52,7 +53,7 @@ def set_tpd_tpp(Norb,tpd,tpp,pds,pdp,pps,ppp):
                           'py1'   : ['L','R'],\
                           'px2'   : ['U','D'],\
                           'py2'   : ['U','D']}
-    elif pam.Norb==11:
+    elif pam.Norb==11 or pam.Norb==4:
         tpd_nn_hop_dir = {'d3z2r2': ['L','R','U','D'],\
                           'dx2y2' : ['L','R','U','D'],\
                           'dxy'   : ['L','R','U','D'],\
@@ -65,7 +66,7 @@ def set_tpd_tpp(Norb,tpd,tpp,pds,pdp,pps,ppp):
                           'py2'   : ['U','D'],\
                           'pz2'   : ['U','D']}
         
-    if pam.Norb==7:
+    if pam.Norb==7 or pam.Norb==4:
         tpd_orbs = {'d3z2r2','dx2y2','px','py'}
     elif pam.Norb==9:
         tpd_orbs = {'d3z2r2','dx2y2','dxy','px1','py1','px2','py2'}
@@ -78,7 +79,7 @@ def set_tpd_tpp(Norb,tpd,tpp,pds,pdp,pps,ppp):
     # dx2-y2 hoping to the O px in the positive x direction should be positive for electrons and for O in the minus x
     # directions should be negative for electrons, i.e. the hoping integral should be minus sign of overlap integral
     # between two neighboring atoms. 
-    if pam.Norb==7:
+    if pam.Norb==7 or pam.Norb==4:
         # d3z2r2 has +,-,+ sign structure so that it is - in x-y plane
         tpd_nn_hop_fac = {('d3z2r2','L','px'): -tpd/np.sqrt(3),\
                           ('d3z2r2','R','px'):  tpd/np.sqrt(3),\
@@ -160,7 +161,7 @@ def set_tpd_tpp(Norb,tpd,tpp,pds,pdp,pps,ppp):
                           ('pz2','D','dyz'):   pdp,\
                           ('pz2','U','dyz'):  -pdp}
     ########################## tpp below ##############################
-    if pam.Norb==7:
+    if pam.Norb==7 or pam.Norb==4:
         tpp_nn_hop_fac = {('UR','px','py'): -tpp,\
                           ('UL','px','py'):  tpp,\
                           ('DL','px','py'): -tpp,\
@@ -207,6 +208,20 @@ def set_tpd_tpp(Norb,tpd,tpp,pds,pdp,pps,ppp):
     return tpd_nn_hop_dir, tpd_orbs, tpd_nn_hop_fac, tpp_nn_hop_fac
 
 def set_tz(Norb,if_tz_exist,tz):                            #条件Ni向下
+    
+    if pam.Norb==4:
+        if if_tz_exist == 0: 
+            tz_fac ={('px','px'):  tz,\
+                     ('py','py'):  tz,\
+                     ('d3z2r2','d3z2r2'):  1.2*tz,\
+                     ('dx2y2', 'dx2y2'):  tz}
+        if if_tz_exist == 1: 
+            tz_fac ={('d3z2r2','d3z2r2'):  1.2*tz,\
+                     ('dx2y2', 'dx2y2'):  tz}   
+        if if_tz_exist == 2: 
+            tz_fac ={('d3z2r2','d3z2r2'):  1.2*tz}        
+    
+    
     if pam.Norb==7:
         if if_tz_exist == 0: 
             tz_fac ={('px','px'):  tz,\
@@ -273,116 +288,146 @@ def get_interaction_mat(A, sym):
     C = pam.C
     
     # not useful if treat 1A1 and 1B1 as correct ee states as (exex +- eyey)/sqrt(2)
-    if sym=='1AB1':
-        fac = np.sqrt(6)
-        Stot = 0
-        Sz_set = [0]
-        state_order = {('d3z2r2','d3z2r2'): 0,\
-                       ('dx2y2','dx2y2')  : 1,\
-                       ('dxy','dxy')      : 2,\
-                       ('dxz','dxz')      : 3,\
-                       ('dyz','dyz')      : 4,\
-                       ('d3z2r2','dx2y2') : 5}
-        interaction_mat = [[A+4.*B+3.*C,  4.*B+C,       4.*B+C,           B+C,           B+C,       0], \
-                           [4.*B+C,       A+4.*B+3.*C,  C,             3.*B+C,        3.*B+C,       0], \
-                           [4.*B+C,       C,            A+4.*B+3.*C,   3.*B+C,        3.*B+C,       0], \
-                           [B+C,          3.*B+C,       3.*B+C,        A+4.*B+3.*C,   3.*B+C,       B*fac], \
-                           [B+C,          3.*B+C,       3.*B+C,        3.*B+C,        A+4.*B+3.*C, -B*fac], \
-                           [0,            0,            0,              B*fac,         -B*fac,      A+2.*C]]
-    if sym=='1A1':
-        Stot = 0
-        Sz_set = [0]
-        AorB_sym = 1
-        fac = np.sqrt(2)
-        
-        state_order = {('d3z2r2','d3z2r2'): 0,\
-                       ('dx2y2','dx2y2')  : 1,\
-                       ('dxy','dxy')      : 2,\
-                       ('dxz','dxz')      : 3,\
-                       ('dyz','dyz')      : 3}
-        interaction_mat = [[A+4.*B+3.*C,  4.*B+C,       4.*B+C,        fac*(B+C)], \
-                           [4.*B+C,       A+4.*B+3.*C,  C,             fac*(3.*B+C)], \
-                           [4.*B+C,       C,            A+4.*B+3.*C,   fac*(3.*B+C)], \
-                           [fac*(B+C),    fac*(3.*B+C), fac*(3.*B+C),  A+7.*B+4.*C]]
-    if sym=='1B1':
-        Stot = 0
-        Sz_set = [0]
-        AorB_sym = -1
-        fac = np.sqrt(3)
-        state_order = {('d3z2r2','dx2y2'): 0,\
-                       ('dxz','dxz')     : 1,\
-                       ('dyz','dyz')     : 1}
-        interaction_mat = [[A+2.*C,    2.*B*fac], \
-                           [2.*B*fac,  A+B+2.*C]]
-    if sym=='1A2':
-        Stot = 0
-        Sz_set = [0]
-        AorB_sym = 0
-        state_order = {('dx2y2','dxy'): 0}
-        interaction_mat = [[A+4.*B+2.*C]]
-    if sym=='3A2':
-        Stot = 1
-        Sz_set = [-1,0,1]
-        AorB_sym = 0
-        state_order = {('dx2y2','dxy'): 0,\
-                       ('dxz','dyz')  : 1}
-        interaction_mat = [[A+4.*B,   6.*B], \
-                           [6.*B,     A-5.*B]]
-    if sym=='3B1':
-        Stot = 1
-        Sz_set = [-1,0,1]
-        AorB_sym = 0
-        state_order = {('d3z2r2','dx2y2'): 0}
-        interaction_mat = [[A-8.*B]]
-    if sym=='1B2':
-        Stot = 0
-        Sz_set = [0]
-        AorB_sym = 0
-        fac = np.sqrt(3)
-        state_order = {('d3z2r2','dxy'): 0,\
-                       ('dxz','dyz')   : 1}
-        interaction_mat = [[A+2.*C,    2.*B*fac], \
-                           [2.*B*fac,  A+B+2.*C]]
-    if sym=='3B2':
-        Stot = 1
-        Sz_set = [-1,0,1]
-        AorB_sym = 0
-        state_order = {('d3z2r2','dxy'): 0}
-        interaction_mat = [[A-8.*B]]
-    if sym=='1E':
-        Stot = 0
-        Sz_set = [0]
-        AorB_sym = 0
-        fac = np.sqrt(3)
-        state_order = {('d3z2r2','dxz'): 0,\
-                       ('d3z2r2','dyz'): 1,\
-                       ('dx2y2','dxz') : 2,\
-                       ('dx2y2','dyz') : 3,\
-                       ('dxy','dxz')   : 4,\
-                       ('dxy','dyz')   : 5}    
-        interaction_mat = [[A+3.*B+2.*C,  0,           -B*fac,      0,          0,        -B*fac], \
-                           [0,            A+3.*B+2.*C,  0,          B*fac,     -B*fac,     0], \
-                           [-B*fac,       0,            A+B+2.*C,   0,          0,        -3.*B], \
-                           [0,            B*fac,        0,          A+B+2.*C,   3.*B,      0 ], \
-                           [0,           -B*fac,        0,          3.*B,       A+B+2.*C,  0], \
-                           [-B*fac,       0,           -3.*B,       0,          0,         A+B+2.*C]]
-    if sym=='3E':
-        Stot = 1
-        Sz_set = [-1,0,1]
-        AorB_sym = 0
-        fac = np.sqrt(3)
-        state_order = {('d3z2r2','dxz'): 0,\
-                       ('d3z2r2','dyz'): 1,\
-                       ('dx2y2','dxz') : 2,\
-                       ('dx2y2','dyz') : 3,\
-                       ('dxy','dxz')   : 4,\
-                       ('dxy','dyz')   : 5}        
-        interaction_mat = [[A+B,         0,         -3.*B*fac,    0,          0,        -3.*B*fac], \
-                           [0,           A+B,        0,           3.*B*fac,  -3.*B*fac,  0], \
-                           [-3.*B*fac,   0,          A-5.*B,      0,          0,         3.*B], \
-                           [0,           3.*B*fac,   0,           A-5.*B,    -3.*B,      0 ], \
-                           [0,          -3.*B*fac,   0,          -3.*B,       A-5.*B,    0], \
-                           [-3.*B*fac,   0,          3.*B,        0,          0,         A-5.*B]]
+    if pam.Norb==7 or pam.Norb==9 or pam.Norb==11:
+        if sym=='1AB1':
+            fac = np.sqrt(6)
+            Stot = 0
+            Sz_set = [0]
+            state_order = {('d3z2r2','d3z2r2'): 0,\
+                           ('dx2y2','dx2y2')  : 1,\
+                           ('dxy','dxy')      : 2,\
+                           ('dxz','dxz')      : 3,\
+                           ('dyz','dyz')      : 4,\
+                           ('d3z2r2','dx2y2') : 5}
+            interaction_mat = [[A+4.*B+3.*C,  4.*B+C,       4.*B+C,           B+C,           B+C,       0], \
+                               [4.*B+C,       A+4.*B+3.*C,  C,             3.*B+C,        3.*B+C,       0], \
+                               [4.*B+C,       C,            A+4.*B+3.*C,   3.*B+C,        3.*B+C,       0], \
+                               [B+C,          3.*B+C,       3.*B+C,        A+4.*B+3.*C,   3.*B+C,       B*fac], \
+                               [B+C,          3.*B+C,       3.*B+C,        3.*B+C,        A+4.*B+3.*C, -B*fac], \
+                               [0,            0,            0,              B*fac,         -B*fac,      A+2.*C]]
+        if sym=='1A1':
+            Stot = 0
+            Sz_set = [0]
+            AorB_sym = 1
+            fac = np.sqrt(2)
+
+            state_order = {('d3z2r2','d3z2r2'): 0,\
+                           ('dx2y2','dx2y2')  : 1,\
+                           ('dxy','dxy')      : 2,\
+                           ('dxz','dxz')      : 3,\
+                           ('dyz','dyz')      : 3}
+            interaction_mat = [[A+4.*B+3.*C,  4.*B+C,       4.*B+C,        fac*(B+C)], \
+                               [4.*B+C,       A+4.*B+3.*C,  C,             fac*(3.*B+C)], \
+                               [4.*B+C,       C,            A+4.*B+3.*C,   fac*(3.*B+C)], \
+                               [fac*(B+C),    fac*(3.*B+C), fac*(3.*B+C),  A+7.*B+4.*C]]
+        if sym=='1B1':
+            Stot = 0
+            Sz_set = [0]
+            AorB_sym = -1
+            fac = np.sqrt(3)
+            state_order = {('d3z2r2','dx2y2'): 0,\
+                           ('dxz','dxz')     : 1,\
+                           ('dyz','dyz')     : 1}
+            interaction_mat = [[A+2.*C,    2.*B*fac], \
+                               [2.*B*fac,  A+B+2.*C]]
+        if sym=='1A2':
+            Stot = 0
+            Sz_set = [0]
+            AorB_sym = 0
+            state_order = {('dx2y2','dxy'): 0}
+            interaction_mat = [[A+4.*B+2.*C]]
+        if sym=='3A2':
+            Stot = 1
+            Sz_set = [-1,0,1]
+            AorB_sym = 0
+            state_order = {('dx2y2','dxy'): 0,\
+                           ('dxz','dyz')  : 1}
+            interaction_mat = [[A+4.*B,   6.*B], \
+                               [6.*B,     A-5.*B]]
+        if sym=='3B1':
+            Stot = 1
+            Sz_set = [-1,0,1]
+            AorB_sym = 0
+            state_order = {('d3z2r2','dx2y2'): 0}
+            interaction_mat = [[A-8.*B]]
+        if sym=='1B2':
+            Stot = 0
+            Sz_set = [0]
+            AorB_sym = 0
+            fac = np.sqrt(3)
+            state_order = {('d3z2r2','dxy'): 0,\
+                           ('dxz','dyz')   : 1}
+            interaction_mat = [[A+2.*C,    2.*B*fac], \
+                               [2.*B*fac,  A+B+2.*C]]
+        if sym=='3B2':
+            Stot = 1
+            Sz_set = [-1,0,1]
+            AorB_sym = 0
+            state_order = {('d3z2r2','dxy'): 0}
+            interaction_mat = [[A-8.*B]]
+        if sym=='1E':
+            Stot = 0
+            Sz_set = [0]
+            AorB_sym = 0
+            fac = np.sqrt(3)
+            state_order = {('d3z2r2','dxz'): 0,\
+                           ('d3z2r2','dyz'): 1,\
+                           ('dx2y2','dxz') : 2,\
+                           ('dx2y2','dyz') : 3,\
+                           ('dxy','dxz')   : 4,\
+                           ('dxy','dyz')   : 5}    
+            interaction_mat = [[A+3.*B+2.*C,  0,           -B*fac,      0,          0,        -B*fac], \
+                               [0,            A+3.*B+2.*C,  0,          B*fac,     -B*fac,     0], \
+                               [-B*fac,       0,            A+B+2.*C,   0,          0,        -3.*B], \
+                               [0,            B*fac,        0,          A+B+2.*C,   3.*B,      0 ], \
+                               [0,           -B*fac,        0,          3.*B,       A+B+2.*C,  0], \
+                               [-B*fac,       0,           -3.*B,       0,          0,         A+B+2.*C]]
+        if sym=='3E':
+            Stot = 1
+            Sz_set = [-1,0,1]
+            AorB_sym = 0
+            fac = np.sqrt(3)
+            state_order = {('d3z2r2','dxz'): 0,\
+                           ('d3z2r2','dyz'): 1,\
+                           ('dx2y2','dxz') : 2,\
+                           ('dx2y2','dyz') : 3,\
+                           ('dxy','dxz')   : 4,\
+                           ('dxy','dyz')   : 5}        
+            interaction_mat = [[A+B,         0,         -3.*B*fac,    0,          0,        -3.*B*fac], \
+                               [0,           A+B,        0,           3.*B*fac,  -3.*B*fac,  0], \
+                               [-3.*B*fac,   0,          A-5.*B,      0,          0,         3.*B], \
+                               [0,           3.*B*fac,   0,           A-5.*B,    -3.*B,      0 ], \
+                               [0,          -3.*B*fac,   0,          -3.*B,       A-5.*B,    0], \
+                               [-3.*B*fac,   0,          3.*B,        0,          0,         A-5.*B]]
+    if pam.Norb==4:  
+        if sym=='1A1':
+            Stot = 0
+            Sz_set = [0]
+            AorB_sym = 1
+            fac = np.sqrt(2)
+
+            state_order = {('d3z2r2','d3z2r2'): 0,\
+                           ('dx2y2','dx2y2')  : 1}
+            interaction_mat = [[A+4.*B+3.*C,  4.*B+C,       4.*B+C,        fac*(B+C)], \
+                               [4.*B+C,       A+4.*B+3.*C,  C,             fac*(3.*B+C)], \
+                               [4.*B+C,       C,            A+4.*B+3.*C,   fac*(3.*B+C)], \
+                               [fac*(B+C),    fac*(3.*B+C), fac*(3.*B+C),  A+7.*B+4.*C]]
+        if sym=='1B1':
+            Stot = 0
+            Sz_set = [0]
+            AorB_sym = -1
+            fac = np.sqrt(3)
+            state_order = {('d3z2r2','dx2y2'): 0}
+            interaction_mat = [[A+2.*C,    2.*B*fac], \
+                               [2.*B*fac,  A+B+2.*C]]
+
+        if sym=='3B1':
+            Stot = 1
+            Sz_set = [-1,0,1]
+            AorB_sym = 0
+            state_order = {('d3z2r2','dx2y2'): 0}
+            interaction_mat = [[A-8.*B]]
+
         
     return state_order, interaction_mat, Stot, Sz_set, AorB_sym
 
