@@ -12,6 +12,17 @@ if pam.Norb==3:
     int_orb = {0: 'dx2y2',\
                1: 'px',\
                2: 'py'}
+elif pam.Norb==4:
+    orb_int = {'d3z2r2': 0,\
+               'dx2y2': 1,\
+               'px':    2,\
+               'py':    3} 
+    int_orb = {0: 'd3z2r2',\
+               1: 'dx2y2',\
+               2: 'px',\
+               3: 'py'}    
+    
+    
 elif pam.Norb==7:
     orb_int = {'d3z2r2': 0,\
                'dx2y2':  1,\

@@ -33,8 +33,8 @@ C = 0.58
 
 # IMPORTANT: keep all hoppings below positive to avoid confusion
 #            hopping signs are considered in dispersion separately
-Norb = 7
-if Norb==7:
+Norb = 4
+if Norb==7 or Norb==4:
     #tpds = [0.00001]  # for check_CuO4_eigenvalues.py
     tpds = np.linspace(1.3, 1.3, num=1, endpoint=True) #[0.25]
 #     tpds = [0.01]
@@ -92,9 +92,12 @@ if if_get_ground_state==1:
     Neval = 10
 if_compute_Aw_dd_total = 0
 
-Ni_Cu_orbs = ['dx2y2','dxy','dxz','dyz','d3z2r2']
+if Norb==7 or Norb==9 or Norb==11:
+    Ni_Cu_orbs = ['dx2y2','dxy','dxz','dyz','d3z2r2']
+elif Norb==4:
+    Ni_Cu_orbs = ['dx2y2','d3z2r2']    
     
-if Norb==7:
+if Norb==7 or Norb==4:
     O1_orbs  = ['px']
     O2_orbs  = ['py']
 elif Norb==9:
