@@ -29,7 +29,10 @@ def reorder_z(slabel):
             state_label = [s2,orb2,x2,y2,z2,s1,orb1,x1,y1,z1]
         elif z2==z1 and orb1=='dx2y2' and orb2=='d3z2r2':
             state_label = [s2,orb2,x2,y2,z2,s1,orb1,x1,y1,z1]
-            
+    elif orb1 in pam.O_orbs and orb2 in pam.H_orbs:
+        state_label = [s2,orb2,x2,y2,z2,s1,orb1,x1,y1,z1]            
+    elif orb1 in pam.H_orbs and orb2 in pam.Ni_Cu_orbs:
+        state_label = [s2,orb2,x2,y2,z2,s1,orb1,x1,y1,z1]             
     elif orb1 in pam.O_orbs and orb2 in pam.Ni_Cu_orbs:
         state_label = [s2,orb2,x2,y2,z2,s1,orb1,x1,y1,z1]
         
@@ -77,13 +80,13 @@ def make_z_canonical(slabel):
             tmp14 = reorder_z(tlabel)
             if tmp14 == tlabel:
                 slabel2 = slabel[0:5]+ [s4,orb4,x4,y4,z4] + slabel[5:15]
-            elif  tmp24 != tlabel:
+            elif  tmp14 != tlabel:
                 slabel2 = [s4,orb4,x4,y4,z4] + slabel[0:15]     
                 
     return slabel2
 
 
-def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):  
+def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val):  
     '''
     Obtain the ground state info, namely the lowest peak in Aw_dd's component
     in particular how much weight of various d8 channels: a1^2, b1^2, b2^2, e^2
@@ -134,7 +137,7 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
         #    continue
             
         print ('eigenvalue = ', vals[k])
-        indices = np.nonzero(abs(vecs[:,k])>0.1)
+        indices = np.nonzero(abs(vecs[:,k])>0.001)
 
         wgt_LmLn = np.zeros(10)
         wgt_d9Ld10L2 = np.zeros(20)
@@ -158,8 +161,10 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
         wgt_d9Ld8 = np.zeros(10)  
         wgt_d8Ld9 = np.zeros(10)
         wgt_d8d8 = np.zeros(20)     
-    
-    
+        wgt_H = np.zeros(20) 
+        wgt_211 = np.zeros(20)    
+        wgt_112 = np.zeros(20)           
+        wgt_121 = np.zeros(20)         
 
         
 #         s11=0
@@ -203,7 +208,15 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
 #             Sz_Niother_12 = Sz_other_Ni_val[i]
 #             S_Cuother_12  = S_other_Cu_val[i]
 #             Sz_Cuother_12 = Sz_other_Cu_val[i]
-                
+             
+#             print (' state ', i, ' ',orb1,s1,x1,y1,z1,' ',orb2,s2,x2,y2,z2,' ',orb3,s3,x3,y3,z3,' ',orb4,s4,x4,y4,z4,\
+#                '\n S_Ni=', S_Ni_12, ',  Sz_Ni=', Sz_Ni_12, \
+#                ',  S_Cu=', S_Cu_12, ',  Sz_Cu=', Sz_Cu_12, \
+#                ", weight = ", weight,'\n')   
+                    
+    
+    
+    
             slabel=[s1,orb1,x1,y1,z1,s2,orb2,x2,y2,z2,s3,orb3,x3,y3,z3,s4,orb4,x4,y4,z4]
             slabel= make_z_canonical(slabel)
             s1 = slabel[0]; orb1 = slabel[1]; x1 = slabel[2]; y1 = slabel[3]; z1 = slabel[4];
@@ -211,12 +224,12 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
             s3 = slabel[10]; orb3 = slabel[11]; x3 = slabel[12]; y3 = slabel[13]; z3 = slabel[14];
             s4 = slabel[15]; orb4 = slabel[16]; x4 = slabel[17]; y4 = slabel[18]; z4 = slabel[19];     
             
-            if i in indices[0]: 
-                sumweight1=sumweight1+abs(vecs[i,k])**2
-                print (' state ', i, ' ',orb1,s1,x1,y1,z1,' ',orb2,s2,x2,y2,z2,' ',orb3,s3,x3,y3,z3,' ',orb4,s4,x4,y4,z4,\
-                   '\n S_Ni=', S_Ni_12, ',  Sz_Ni=', Sz_Ni_12, \
-                   ',  S_Cu=', S_Cu_12, ',  Sz_Cu=', Sz_Cu_12, \
-                   ", weight = ", weight,'\n')   
+#             if i in indices[0]: 
+#                 sumweight1=sumweight1+abs(vecs[i,k])**2
+#                 print (' state ', i, ' ',orb1,s1,x1,y1,z1,' ',orb2,s2,x2,y2,z2,' ',orb3,s3,x3,y3,z3,' ',orb4,s4,x4,y4,z4,\
+#                    '\n S_Ni=', S_Ni_12, ',  Sz_Ni=', Sz_Ni_12, \
+#                    ',  S_Cu=', S_Cu_12, ',  Sz_Cu=', Sz_Cu_12, \
+#                    ", weight = ", weight,'\n')   
                 
                 
             if (orb1 in pam.O_orbs) and  (orb2 in pam.O_orbs)  and  (orb3 in pam.O_orbs)  and  (orb4 in pam.O_orbs):
@@ -231,7 +244,7 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
                     wgt_LmLn[4]+=abs(vecs[i,k])**2    
 
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.O_orbs)  and  (orb3 in pam.O_orbs)\
-                      and (orb4 in pam.O_orbs)  and z1==z2==1 and z3==z4==0:
+                      and (orb4 in pam.O_orbs)  and z1==z2==2 and z3==z4==0:
                 if orb1=='dx2y2':
                     wgt_d9Ld10L2[0]+=abs(vecs[i,k])**2   
                 elif orb1=='d3z2r2': 
@@ -261,14 +274,14 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
                         
                         
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.O_orbs)  and  (orb3 in pam.O_orbs)\
-                      and (orb4 in pam.O_orbs) and z1==1 and z2==z3==z4==0:
+                      and (orb4 in pam.O_orbs) and z1==2 and z2==z3==z4==0:
                 if orb1=='dx2y2':
                     wgt_d9d10L3[0]+=abs(vecs[i,k])**2   
                 elif orb1=='d3z2r2':
                     wgt_d9d10L3[1]+=abs(vecs[i,k])**2  
                     
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.O_orbs)  and  (orb3 in pam.O_orbs)\
-                      and (orb4 in pam.O_orbs) and z1==0 and z2==z3==z4==1:
+                      and (orb4 in pam.O_orbs) and z1==0 and z2==z3==z4==2:
                 if orb1=='dx2y2':
                     wgt_d10L3d9[0]+=abs(vecs[i,k])**2   
                 elif orb1=='d3z2r2': 
@@ -285,14 +298,14 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
                         wgt_d10L3d9[5]+=abs(vecs[i,k])**2                      
                     
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.O_orbs)  and  (orb3 in pam.O_orbs) \
-                      and (orb4 in pam.O_orbs) and z1==z2==z3==1 and z4==0:
+                      and (orb4 in pam.O_orbs) and z1==z2==z3==2 and z4==0:
                 if orb1=='dx2y2':
                     wgt_d9L2d10L[0]+=abs(vecs[i,k])**2   
                 elif orb1=='d3z2r2':
                     wgt_d9L2d10L[1]+=abs(vecs[i,k])**2                       
                     
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.O_orbs)  and  (orb3 in pam.O_orbs) \
-                      and (orb4 in pam.O_orbs) and z2==1 and z1==z3==z4==0:
+                      and (orb4 in pam.O_orbs) and z2==2 and z1==z3==z4==0:
                 if orb1=='dx2y2':
                     wgt_d10Ld9L2[0]+=abs(vecs[i,k])**2   
                 elif orb1=='d3z2r2':
@@ -306,14 +319,14 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
                     wgt_d10d9L3[1]+=abs(vecs[i,k])**2          
                     
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.O_orbs)  and  (orb3 in pam.O_orbs) \
-                      and (orb4 in pam.O_orbs) and z2==z3==1 and z1==z4==0:
+                      and (orb4 in pam.O_orbs) and z2==z3==2 and z1==z4==0:
                 if orb1=='dx2y2':
                     wgt_d10L2d9L[0]+=abs(vecs[i,k])**2   
                 elif orb1=='d3z2r2':
                     wgt_d10L2d9L[1]+=abs(vecs[i,k])**2           
                     
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs)  and  (orb3 in pam.O_orbs) \
-                      and (orb4 in pam.O_orbs) and z1==z2==1 and z3==1 and z4==0 :
+                      and (orb4 in pam.O_orbs) and z1==z2==2 and z3==2 and z4==0 :
                 if orb1=='d3z2r2' and orb2=='dx2y2' and S_Ni_12==0:
                     wgt_d8Ld10L[0]+=abs(vecs[i,k])**2                      
                 elif orb1=='d3z2r2' and orb2=='dx2y2' and S_Ni_12==1:
@@ -324,7 +337,7 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
                     wgt_d8Ld10L[3]+=abs(vecs[i,k])**2  
                     
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs)  and  (orb3 in pam.O_orbs) \
-                      and (orb4 in pam.O_orbs) and z1==z2==0 and z3==1 and z4==0 :
+                      and (orb4 in pam.O_orbs) and z1==z2==0 and z3==2 and z4==0 :
                 if orb1=='d3z2r2' and orb2=='dx2y2' and S_Cu_12==0:
                     wgt_d10Ld8L[0]+=abs(vecs[i,k])**2                      
                 elif orb1=='d3z2r2' and orb2=='dx2y2' and S_Cu_12==1:
@@ -335,7 +348,7 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
                     wgt_d10Ld8L[3]+=abs(vecs[i,k])**2                      
                                           
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs)  and  (orb3 in pam.O_orbs) \
-                      and (orb4 in pam.O_orbs) and z1==z2==1 and z3==z4==0 :
+                      and (orb4 in pam.O_orbs) and z1==z2==2 and z3==z4==0 :
                 if orb1=='d3z2r2' and orb2=='dx2y2' and S_Ni_12==0:
                     wgt_d8d10L2[0]+=abs(vecs[i,k])**2                      
                 elif orb1=='d3z2r2' and orb2=='dx2y2' and S_Ni_12==1:
@@ -357,7 +370,7 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
                     wgt_d10d8L2[3]+=abs(vecs[i,k])**2                        
                                      
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs)  and  (orb3 in pam.O_orbs) \
-                      and (orb4 in pam.O_orbs) and z1==z2==1 and z3==z4==1 :
+                      and (orb4 in pam.O_orbs) and z1==z2==2 and z3==z4==2 :
                 if orb1=='d3z2r2' and orb2=='dx2y2' and S_Ni_12==0:
                     wgt_d8L2d10[0]+=abs(vecs[i,k])**2                      
                 elif orb1=='d3z2r2' and orb2=='dx2y2' and S_Ni_12==1:
@@ -368,7 +381,7 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
                     wgt_d8L2d10[3]+=abs(vecs[i,k])**2                        
                
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs)  and  (orb3 in pam.O_orbs) \
-                      and (orb4 in pam.O_orbs) and z1==z2==0 and z3==z4==1 :
+                      and (orb4 in pam.O_orbs) and z1==z2==0 and z3==z4==2 :
                 if orb1=='d3z2r2' and orb2=='dx2y2' and S_Cu_12==0:
                     wgt_d10L2d8[0]+=abs(vecs[i,k])**2                      
                 elif orb1=='d3z2r2' and orb2=='dx2y2' and S_Cu_12==1:
@@ -379,7 +392,7 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
                     wgt_d10L2d8[3]+=abs(vecs[i,k])**2                         
 
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs)  and  (orb3 in pam.O_orbs) \
-                      and (orb4 in pam.O_orbs) and z1==1 and z2==0 and z3==z4==1 :                               
+                      and (orb4 in pam.O_orbs) and z1==2 and z2==0 and z3==z4==2 :                               
                 if orb1=='d3z2r2' and orb2=='dx2y2':
                     wgt_d9L2d9[0]+=abs(vecs[i,k])**2 
                     if s3==s4 and s1=='up':
@@ -408,7 +421,7 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
                     
                     
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs)  and  (orb3 in pam.O_orbs) \
-                      and (orb4 in pam.O_orbs) and z1==1 and z2==0 and z3==z4==0 :                               
+                      and (orb4 in pam.O_orbs) and z1==2 and z2==0 and z3==z4==0 :                               
                 if orb1=='d3z2r2' and orb2=='dx2y2':
                     wgt_d9d9L2[0]+=abs(vecs[i,k])**2    
                 elif orb1=='dx2y2' and orb2=='d3z2r2':
@@ -420,7 +433,8 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
                     
                 
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs)  and  (orb3 in pam.O_orbs) \
-                      and (orb4 in pam.O_orbs) and z1==1 and z2==0 and z3==1 and z4==0 :                  
+                      and (orb4 in pam.O_orbs) and z1==2 and z2==0 and z3==2 and z4==0 :     
+             
                 if orb1=='dx2y2' and orb2=='dx2y2' :
                     wgt_d9Ld9L[0]+=abs(vecs[i,k])**2   
                 elif orb1=='d3z2r2' and orb2=='dx2y2' :
@@ -433,6 +447,12 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
                     
                 if  orb1=='dx2y2' and orb2=='dx2y2' and S_Ni_12==0 and S_Cu_12==0: 
                     wgt_d9Ld9L[4]+=abs(vecs[i,k])**2
+                    if i in indices[0]: 
+                        print (' state ', i, ' ',orb1,s1,x1,y1,z1,' ',orb2,s2,x2,y2,z2,' ',orb3,s3,x3,y3,z3,' ',orb4,s4,x4,y4,z4,\
+                           '\n S_Ni=', S_Ni_12, ',  Sz_Ni=', Sz_Ni_12, \
+                           ',  S_Cu=', S_Cu_12, ',  Sz_Cu=', Sz_Cu_12, \
+                           ", weight = ", weight,'\n')   
+        
                     if s1==s2:
                         wgt_d9Ld9L[20]+=abs(vecs[i,k])**2 
                     elif s1!=s2:
@@ -477,7 +497,7 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
 
                     
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs)  and  (orb3 in pam.Ni_Cu_orbs) \
-                      and (orb4 in pam.O_orbs) and z1==1 and z2==z3==z4==0:                     
+                      and (orb4 in pam.O_orbs) and z1==2 and z2==z3==z4==0:                     
                 if orb1=='dx2y2' and orb2=='d3z2r2'  and  orb3=='d3z2r2' and S_Cu_12==0:
                     wgt_d9d8L[0]+=abs(vecs[i,k])**2                      
                 elif orb1=='d3z2r2' and orb2=='d3z2r2'  and  orb3=='dx2y2' and S_Cu_12==0:
@@ -495,7 +515,7 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
                   
                 
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs)  and  (orb3 in pam.Ni_Cu_orbs) \
-                      and (orb4 in pam.O_orbs) and z1==z2==1 and z3==z4==0:                 
+                      and (orb4 in pam.O_orbs) and z1==z2==2 and z3==z4==0:                 
                 if orb1=='d3z2r2' and orb2=='dx2y2'  and  orb3=='d3z2r2':
                     wgt_d8d9L[0]+=abs(vecs[i,k])**2                                  
                 elif orb1=='dx2y2' and orb2=='dx2y2'  and  orb3=='d3z2r2':
@@ -568,7 +588,7 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
                         
 
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs)  and  (orb3 in pam.Ni_Cu_orbs) \
-                      and (orb4 in pam.O_orbs) and z1==z4==1 and z2==z3==0:                 
+                      and (orb4 in pam.O_orbs) and z1==z4==2 and z2==z3==0:                 
                 if orb1=='dx2y2' and orb2=='d3z2r2'  and  orb3=='d3z2r2' and S_Cu_12==0:
                     wgt_d9Ld8[0]+=abs(vecs[i,k])**2                      
                 elif orb1=='d3z2r2' and orb2=='d3z2r2'  and  orb3=='dx2y2' and S_Cu_12==0:
@@ -586,7 +606,7 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
                     
                     
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs)  and  (orb3 in pam.Ni_Cu_orbs) \
-                      and (orb4 in pam.O_orbs) and z1==z2==z4==1 and z3==0:                      
+                      and (orb4 in pam.O_orbs) and z1==z2==z4==2 and z3==0:                      
                 if orb1=='d3z2r2' and orb2=='dx2y2'  and  orb3=='d3z2r2' and S_Ni_12==0:
                     wgt_d8Ld9[0]+=abs(vecs[i,k])**2                       
                 elif orb1=='d3z2r2' and orb2=='dx2y2'  and  orb3=='d3z2r2' and S_Ni_12==1:
@@ -604,7 +624,7 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
    
 
             elif (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs)  and  (orb3 in pam.Ni_Cu_orbs) \
-                      and (orb4 in pam.Ni_Cu_orbs) and z1==z2==1 and z3==z4==0:                      
+                      and (orb4 in pam.Ni_Cu_orbs) and z1==z2==2 and z3==z4==0:                      
                 if orb1=='dx2y2' and orb2=='dx2y2'  and orb3=='d3z2r2' and orb4=='d3z2r2':
                     wgt_d8d8[0]+=abs(vecs[i,k])**2                       
                 elif orb1=='d3z2r2' and orb2=='dx2y2' and orb3=='d3z2r2' and orb4=='dx2y2':
@@ -640,64 +660,64 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs) and (orb3 in pam.Ni_Cu_orbs) and (orb4 in pam.Ni_Cu_orbs):
                 wgt_d8d8[14]+=abs(vecs[i,k])**2 
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.O_orbs) and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
-                and z1==z2==1 and z3==z4==0:
+                and z1==z2==2 and z3==z4==0:
                 wgt_d9Ld10L2[12]+=abs(vecs[i,k])**2
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.O_orbs) and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
-                and z1==1 and z2==z3==z4==0:
+                and z1==2 and z2==z3==z4==0:
                 wgt_d9d10L3[8]+=abs(vecs[i,k])**2    
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.O_orbs) and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
-                and z1==0 and z2==z3==z4==1:
+                and z1==0 and z2==z3==z4==2:
                 wgt_d10L3d9[10]+=abs(vecs[i,k])**2                    
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.O_orbs) and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
-                and z1==z2==z3==1 and z4==0:
+                and z1==z2==z3==2 and z4==0:
                 wgt_d9L2d10L[8]+=abs(vecs[i,k])**2
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.O_orbs) and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
-                and z2==1 and z1==z3==z4==0:
+                and z2==2 and z1==z3==z4==0:
                 wgt_d10Ld9L2[8]+=abs(vecs[i,k])**2      
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.O_orbs) and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
                 and z1==z2==z3==z4==0:
                 wgt_d10d9L3[8]+=abs(vecs[i,k])**2                     
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.O_orbs) and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
-                and z2==z3==1 and z1==z4==0:
+                and z2==z3==2 and z1==z4==0:
                 wgt_d10L2d9L[8]+=abs(vecs[i,k])**2  
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs) and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
-                and z1==z2==z3==1 and z4==0:
+                and z1==z2==z3==2 and z4==0:
                 wgt_d8Ld10L[8]+=abs(vecs[i,k])**2                  
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs) and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
-                and z1==z2==1 and z3==z4==0:
+                and z1==z2==2 and z3==z4==0:
                 wgt_d8d10L2[8]+=abs(vecs[i,k])**2  
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs) and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
-                and z3==1 and z1==z2==z4==0:
+                and z3==2 and z1==z2==z4==0:
                 wgt_d10Ld8L[8]+=abs(vecs[i,k])**2                  
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs) and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
                 and z1==z2==z3==z4==0:
                 wgt_d10d8L2[8]+=abs(vecs[i,k])**2                  
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs) and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
-                and z1==z2==z3==z4==1:
+                and z1==z2==z3==z4==2:
                 wgt_d8L2d10[8]+=abs(vecs[i,k])**2                   
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs) and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
-                and z3==z4==1 and z1==z2==0:
+                and z3==z4==2 and z1==z2==0:
                 wgt_d10L2d8[8]+=abs(vecs[i,k])**2                    
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs) and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
-                and z1==z3==z4==1 and z2==0:
+                and z1==z3==z4==2 and z2==0:
                 wgt_d9L2d9[12]+=abs(vecs[i,k])**2                  
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs) and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
-                and z1==1 and z2==z3==z4==0:
+                and z1==2 and z2==z3==z4==0:
                 wgt_d9d9L2[8]+=abs(vecs[i,k])**2                   
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs) and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
-                and z1==z3==1 and z2==z4==0:
+                and z1==z3==2 and z2==z4==0:
                 wgt_d9Ld9L[38]+=abs(vecs[i,k])**2                     
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs) and (orb3 in pam.Ni_Cu_orbs) and (orb4 in pam.O_orbs) \
-                and z1==1 and z2==z3==z4==0:
+                and z1==2 and z2==z3==z4==0:
                 wgt_d9d8L[8]+=abs(vecs[i,k])**2   
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs) and (orb3 in pam.Ni_Cu_orbs) and (orb4 in pam.O_orbs) \
-                and z1==z2==1 and z3==z4==0:
+                and z1==z2==2 and z3==z4==0:
                 wgt_d8d9L[31]+=abs(vecs[i,k])**2                   
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs) and (orb3 in pam.Ni_Cu_orbs) and (orb4 in pam.O_orbs) \
-                and z1==z4==1 and z2==z3==0:
+                and z1==z4==2 and z2==z3==0:
                 wgt_d9Ld8[8]+=abs(vecs[i,k])**2                   
             if (orb1 in pam.Ni_Cu_orbs) and (orb2 in pam.Ni_Cu_orbs) and (orb3 in pam.Ni_Cu_orbs) and (orb4 in pam.O_orbs) \
-                and z1==z2==z4==1 and z3==0:
+                and z1==z2==z4==2 and z3==0:
                 wgt_d8Ld9[8]+=abs(vecs[i,k])**2                   
 
 #             if (orb1 =='dx2y2') and (orb2 =='dx2y2') and (orb3 in pam.O_orbs) and (orb4 in pam.O_orbs) \
@@ -715,10 +735,35 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
 #                 if S_Ni_12==0 and S_Cu_12==0:
 #                     s00+=abs(vecs[i,k])**2 
                     
-                    
+            if (orb1 in pam.H_orbs) or (orb2 in pam.H_orbs) or (orb3 in pam.H_orbs) or (orb4 in pam.H_orbs):
+                wgt_H[0]+=abs(vecs[i,k])**2    
+                
+                
+            if (orb1 in pam.H_orbs):    
+                wgt_211[0]+=abs(vecs[i,k])**2                  
+            if (orb1 in pam.Ni_Cu_orbs and orb2 in pam.Ni_Cu_orbs and orb3 in pam.H_orbs and orb4 in pam.H_orbs): 
+                wgt_112[0]+=abs(vecs[i,k])**2  
+            if (orb1 in pam.Ni_Cu_orbs and orb2 in pam.Ni_Cu_orbs and orb3 in pam.H_orbs and orb4 in pam.O_orbs): 
+                wgt_112[1]+=abs(vecs[i,k])**2   
+            if (orb1 in pam.Ni_Cu_orbs and orb2 in pam.H_orbs and orb3 in pam.H_orbs): 
+                wgt_112[2]+=abs(vecs[i,k])**2     
+                
+            if (orb1 in pam.Ni_Cu_orbs and orb2 in pam.H_orbs and orb3 in pam.O_orbs): 
+                wgt_112[3]+=abs(vecs[i,k])**2                     
+            if (orb1 in pam.Ni_Cu_orbs and orb2 in pam.Ni_Cu_orbs and orb3 in pam.Ni_Cu_orbs and orb4 in pam.H_orbs): 
+                wgt_121[0]+=abs(vecs[i,k])**2    
+                
+                
             sumweight=sumweight+abs(vecs[i,k])**2
         print ('sumweight=',sumweight/number)
         print ('sumweight1=',sumweight1/number)
+#         print ('H=',wgt_H[0]) 
+        print ('211=',wgt_211[0]) 
+        print ('ddss=',wgt_112[0]) 
+        print ('ddsp=',wgt_112[1])  
+        print ('dssp=',wgt_112[2])  
+        print ('dspp=',wgt_112[3])          
+        print ('ddds=',wgt_121[0])         
 #         print ('s11=',s11)        
 #         print ('s10=',s10)       
 #         print ('s01=',s01)  
@@ -1292,7 +1337,7 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val, tz):
         txt.write(str(wgt_d9Ld8[6])+'\n')
         txt.close() 
         txt=open('./data/d9Ld8','a')                                  
-        txt.write(str(wgt_d9Ld8[7])+'\n')
+        txt.write(str(wgt_d9Ld8[8])+'\n')
         txt.close()         
         txt=open('./data/d8d9L_singlet','a')                                  
         txt.write(str((wgt_d9Ld8[7]-wgt_d9Ld8[3]-wgt_d9Ld8[4]))+'\n')

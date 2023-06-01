@@ -16,6 +16,8 @@ edNi = edCu
 epNis = np.arange(7.00, 7.06, 10.0)
 epCus = np.arange(7.0, 7.76, 10.0)
 
+ess = np.arange(4.00, 4.06, 10.0)
+
 ANis = np.arange(6.0, 6.01, 1.0)
 ACus = np.arange(6.0, 6.01, 1.0)
 
@@ -33,8 +35,8 @@ C = 0.58
 
 # IMPORTANT: keep all hoppings below positive to avoid confusion
 #            hopping signs are considered in dispersion separately
-Norb = 4
-if Norb==7 or Norb==4:
+Norb = 5
+if Norb==8 or Norb==5:
     #tpds = [0.00001]  # for check_CuO4_eigenvalues.py
     tpds = np.linspace(1.3, 1.3, num=1, endpoint=True) #[0.25]
 #     tpds = [0.01]
@@ -58,8 +60,10 @@ elif Norb==9 or Norb==11:
 #     pps = 0.01
 #     ppp = 0.01
 
-tzs =np.arange(3.0,9.01,140)  
+tzs =np.arange(0.0,9.01,140)  
 
+tdss = [1.6]
+tpss = [0.6]
 
 if_tz_exist = 1
     #if if_tz_exist = 0,tz exist in all orbits.
@@ -71,10 +75,10 @@ eta = 0.1
 Lanczos_maxiter = 600
 
 # restriction on variational space
-reduce_VS = 1
+reduce_VS = 0
 
 if_H0_rotate_byU = 1
-basis_change_type = 'all_states' # 'all_states' or 'd_double'
+basis_change_type = 'd_double' # 'all_states' or 'd_double'
 if_print_VS_after_basis_change = 0
 
 if_compute_Aw = 0
@@ -92,33 +96,40 @@ if if_get_ground_state==1:
     Neval = 10
 if_compute_Aw_dd_total = 0
 
-if Norb==7 or Norb==9 or Norb==11:
+if Norb==8 or Norb==10 or Norb==12:
     Ni_Cu_orbs = ['dx2y2','dxy','dxz','dyz','d3z2r2']
-elif Norb==4:
+elif Norb==5:
     Ni_Cu_orbs = ['dx2y2','d3z2r2']    
+
+H_orbs= ['s']
+
+
     
-if Norb==7 or Norb==4:
+if Norb==8 or Norb==5:
     O1_orbs  = ['px']
     O2_orbs  = ['py']
-elif Norb==9:
+elif Norb==10:
     O1_orbs  = ['px1','py1']
     O2_orbs  = ['px2','py2']
-elif Norb==11:
+elif Norb==12:
     O1_orbs  = ['px1','py1','pz1']
     O2_orbs  = ['px2','py2','pz2']
 O_orbs = O1_orbs + O2_orbs
 # sort the list to facilliate the setup of interaction matrix elements
 Ni_Cu_orbs.sort()
+H_orbs.sort()
 O1_orbs.sort()
 O2_orbs.sort()
 O_orbs.sort()
 print ("Ni_Cu_orbs = ", Ni_Cu_orbs)
+print ("H_orbs = ", H_orbs)
 print ("O1_orbs = ",  O1_orbs)
 print ("O2_orbs = ",  O2_orbs)
-orbs = Ni_Cu_orbs + O_orbs 
+orbs = Ni_Cu_orbs + H_orbs + O_orbs 
 #assert(len(orbs)==Norb)
 
 Upps = [0]
+Usss = [0]
 symmetries = ['1A1','3B1','3B1','1A2','3A2','1E','3E']
 print ("compute A(w) for symmetries = ",symmetries)
 

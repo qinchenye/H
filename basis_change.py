@@ -38,7 +38,7 @@ def find_singlet_triplet_partner_d_double(VS, d_part, index, h34_part):
     return VS.get_index(partner_state), phase
 
 
-def create_singlet_triplet_basis_change_matrix_d_double(VS, d_double, double_part, idx, hole34_part):
+def create_singlet_triplet_basis_change_matrix_d_double(VS, d_double, double_part, idx, hole345_part):
     '''
     Similar to above create_singlet_triplet_basis_change_matrix but only applies
     basis change for d_double states
@@ -95,16 +95,20 @@ def create_singlet_triplet_basis_change_matrix_d_double(VS, d_double, double_par
             ts1 = tstate['hole1_spin']
             ts2 = tstate['hole2_spin']
             ts3 = tstate['hole3_spin']
-            ts4 = tstate['hole4_spin']            
+            ts4 = tstate['hole4_spin'] 
+            ts5 = tstate['hole5_spin']             
             torb1 = tstate['hole1_orb']
             torb2 = tstate['hole2_orb']
             torb3 = tstate['hole3_orb']
-            torb4 = tstate['hole4_orb']            
+            torb4 = tstate['hole4_orb'] 
+            torb5 = tstate['hole5_orb']             
             tx1, ty1, tz1 = tstate['hole1_coord']
             tx2, ty2, tz2 = tstate['hole2_coord']
             tx3, ty3, tz3 = tstate['hole3_coord']
-            tx4, ty4, tz4 = tstate['hole4_coord']            
-            print ('Error state', double_id,ts1,torb1,tx1,ty1,tz1,ts2,torb2,tx2,ty2,tz2,ts3,torb3,tx3,ty3,tz3,ts4,torb4,tx4,ty4,tz4)
+            tx4, ty4, tz4 = tstate['hole4_coord']   
+            tx5, ty5, tz5 = tstate['hole5_coord']               
+            print ('Error state', double_id,ts1,torb1,tx1,ty1,tz1,ts2,torb2,tx2,ty2,tz2,ts3,torb3,tx3,ty3,tz3,ts4,torb4,tx4,ty4,tz4,\
+                   ts5,torb5,tx5,ty5,tz5)
             break
 
         elif s1=='up' and s2=='dn':
@@ -301,7 +305,7 @@ def create_singlet_triplet_basis_change_matrix(VS, double_part, idx, hole34_part
             d_double = d_Cu_double    
 
         # get states in Ni and Cu layers separately and how many orbs
-        Ni_layer, N_Ni, Cu_layer, N_Cu, Ni_i, Cu_i = util.get_NiCu_layer_orbs(start_state)
+        Ni_layer, N_Ni, Cu_layer, N_Cu, Ni_i, Cu_i,H_layer, N_H,H_i = util.get_NiCu_layer_orbs(start_state)
 
         if (not (N_Ni==2 and N_Cu==2)) and (i not in d_double):
             data.append(np.sqrt(2.0)); row.append(i); col.append(i)  

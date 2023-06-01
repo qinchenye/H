@@ -113,27 +113,36 @@ def get_NiCu_layer_orbs(state):
 
     
     Ni_layer = []; Cu_layer = [];Cu_i = []
+    H_layer = [];H_i = []
+    
     for i in range(4):
-        if zs[i]==1:
+        if zs[i]==2:
             Ni_layer.append(ss[i])
             Ni_layer.append(os[i])
             Ni_layer.append(xs[i])
             Ni_layer.append(ys[i])
             Ni_layer.append(zs[i])
             Ni_i.append(i)
-        else:
+        elif zs[i]==0:
             Cu_layer.append(ss[i])
             Cu_layer.append(os[i])
             Cu_layer.append(xs[i])
             Cu_layer.append(ys[i])
             Cu_layer.append(zs[i])
             Cu_i.append(i)
+        elif zs[i]==1:
+            H_layer.append(ss[i])
+            H_layer.append(os[i])
+            H_layer.append(xs[i])
+            H_layer.append(ys[i])
+            H_layer.append(zs[i])
+            H_i.append(i)            
 
     #Ni_z,Cu_i represents the number on Ni,Cu
 #     print(s1,o1,x1,y1,z1,s2,o2,x2,y2,z2,s3,o3,x3,y3,z3,s4,o4,x4,y4,z4)
 #     print(Ni_layer,Cu_layer,Ni_i,Cu_i,len(Ni_layer)/5, len(Cu_layer)/5)
     
-    return Ni_layer, len(Ni_layer)/5, Cu_layer, len(Cu_layer)/5,Ni_i,Cu_i   # /5 to print out real number of holes
+    return Ni_layer, len(Ni_layer)/5, Cu_layer, len(Cu_layer)/5,Ni_i,Cu_i,H_layer, len(H_layer)/5,H_i   # /5 to print out real number of holes
         
         
     
@@ -168,15 +177,17 @@ def get_statistic_orb(os):
     return nNi_Cu, nO, dorbs, porbs
 
 
-def get_orb_edep(orb,z,epCu,epNi):
+def get_orb_edepes(orb,z,epCu,epNi,es):
     '''
     resarch for orb's edep
     ''' 
-    if orb in pam.Ni_Cu_orbs and z==1: 
+    if orb in pam.Ni_Cu_orbs and z==2: 
         diag_el = pam.edNi[orb]
     elif orb in pam.Ni_Cu_orbs and z==0: 
         diag_el = pam.edCu[orb]  
-    elif orb in pam.O_orbs and z==1: 
+    elif orb in pam.H_orbs and z==1: 
+        diag_el = es          
+    elif orb in pam.O_orbs and z==2: 
         diag_el = epNi
     elif orb in pam.O_orbs and z==0: 
         diag_el = epCu
@@ -191,8 +202,31 @@ def get_double_append(i,n,s1,o1,x1,y1,z1,s2,o2,x2,y2,z2,s3,o3,x3,y3,z3,s4,o4,x4,
     elif o1 in pam.O_orbs and o2 in pam.O_orbs:
         p_list.append(i)
 
-        
-        
+def lamlist(l1, l2, l3,l4):
+    '''
+    reduce the 'for' circulation
+    '''        
+    funs = []
+    for i in l1: 
+        for j in l2: 
+            for k in l3:
+                for h in l4:                
+                    x = lambda i=i, j=j, k=k, h=h: (i,j,k,h)
+                    funs.append(x)
+
+    return funs
+       
+def lamlist1(l1, l2):
+    '''
+    reduce the 'for' circulation
+    '''     
+    funs = []
+    for i in l1: 
+        for j in l2: 
+            x = lambda i=i, j=j: (i,j)
+            funs.append(x)
+
+    return funs         
         
 # def get_d_double_3hole(VS, i):
 #     '''
