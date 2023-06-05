@@ -81,15 +81,15 @@ def reorder_state(slabel):
 #             state_label = [s2,orb2,x2,y2,z2,s1,orb1,x1,y1,z1]
 #             phase = -1.0  
 
-
+     # Changed the order for the basis
     
-    if (x2,y2)<(x1,y1): #and (x2!=0 or y2!=0):
+    if z2>z1: #and (x2!=0 or y2!=0):
         state_label = [s2,orb2,x2,y2,z2,s1,orb1,x1,y1,z1]
         phase = -1.0
         
     # note that z1 can differ from z2 in the presence of two layers
-    elif (x1,y1)==(x2,y2):     
-        if z1==z2:
+    elif z1==z2:     
+        if (x1,y1)==(x2,y2):
             if s1==s2:
                 o12 = list(sorted([orb1,orb2]))
                 if o12[0]==orb2:
@@ -98,7 +98,7 @@ def reorder_state(slabel):
             elif s1=='dn' and s2=='up':
                 state_label = ['up',orb2,x2,y2,z2,'dn',orb1,x1,y1,z1]
                 phase = -1.0
-        elif z2>z1:
+        elif (x2,y2)<(x1,y1):
             state_label = [s2,orb2,x2,y2,z2,s1,orb1,x1,y1,z1]
             phase = -1.0  
 
@@ -448,10 +448,10 @@ class VariationalSpace:
         
         
                                                                 # At most, there are only 2 holes in H
-                                                                _, _, _, _,_, _,H_layer, N_H,H_i =\
-                                                                    util.get_NiCu_layer_orbs(state) 
-                                                                if N_H==3 or N_H==4:
-                                                                    continue 
+#                                                                 _, _, _, _,_, _,H_layer, N_H,H_i =\
+#                                                                     util.get_NiCu_layer_orbs(state) 
+#                                                                 if N_H==3 or N_H==4:
+#                                                                     continue 
                         
                                                                 if self.filter_func(canonical_state):
                                                                     uid = self.get_uid(canonical_state)

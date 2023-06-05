@@ -26,7 +26,7 @@ start_time = time.time()
 M_PI = math.pi
                   
 #####################################
-def compute_Aw_main(ANi,ACu,epCu,epNi,es,tpd,tpp,tds,tps,tz,pds,pdp,pps,ppp,Upp,\
+def compute_Aw_main(ANi,ACu,epCu,epNi,es,tpd,tpp,tds,tps,tza1,tzb1,pds,pdp,pps,ppp,Upp,\
                     d_Ni_double,d_Cu_double,p_double,s_double,double_Ni_part,hole34_Ni_part, double_Cu_part,\
                     hole34_Cu_part, idx_Ni,idx_Cu, U_Ni, \
                     S_Ni_val, Sz_Ni_val, AorB_Ni_sym, \
@@ -62,7 +62,7 @@ def compute_Aw_main(ANi,ACu,epCu,epNi,es,tpd,tpp,tds,tps,tz,pds,pdp,pps,ppp,Upp,
     
 #     tz_fac = ham.set_tz(Norb,if_tz_exist,tz)
     
-    tz_fac = ham.set_tz(Norb,if_tz_exist,tz)
+    tz_fac = ham.set_tz(Norb,if_tz_exist,tza1,tzb1)
     
     
     T_pd   = ham.create_tpd_nn_matrix(VS,tpd_nn_hop_dir, tpd_orbs, tpd_nn_hop_fac)
@@ -176,12 +176,21 @@ if __name__ == '__main__':
     p_double, s_double = ham.get_double_occu_list(VS)
     
     # change the basis for d_double states to be singlet/triplet
-    U_Ni,S_Ni_val, Sz_Ni_val, AorB_Ni_sym,\
-                                    =  basis.create_singlet_triplet_basis_change_matrix \
-                                    (VS, double_Ni_part, idx_Ni, hole34_Ni_part,d_Ni_double, d_Cu_double, 'Ni')
-    U_Cu,S_Cu_val, Sz_Cu_val, AorB_Cu_sym,\
-                                    =  basis.create_singlet_triplet_basis_change_matrix \
-                                    (VS, double_Cu_part, idx_Cu, hole34_Cu_part,d_Ni_double, d_Cu_double, 'Cu')
+    if pam.basis_change_type =='all_states':
+        U_Ni,S_Ni_val, Sz_Ni_val, AorB_Ni_sym,\
+                                        =  basis.create_singlet_triplet_basis_change_matrix \
+                                        (VS, double_Ni_part, idx_Ni, hole34_Ni_part,d_Ni_double, d_Cu_double, 'Ni')
+        U_Cu,S_Cu_val, Sz_Cu_val, AorB_Cu_sym,\
+                                        =  basis.create_singlet_triplet_basis_change_matrix \
+                                        (VS, double_Cu_part, idx_Cu, hole34_Cu_part,d_Ni_double, d_Cu_double, 'Cu')
+
+    if pam.basis_change_type =='d_double':
+        U_Ni,S_Ni_val, Sz_Ni_val, AorB_Ni_sym,\
+                     =  basis.create_singlet_triplet_basis_change_matrix_d_double(VS, d_Ni_double, double_Ni_part, idx_Ni, hole34_Ni_part)
+        U_Cu,S_Cu_val, Sz_Cu_val, AorB_Cu_sym,\
+                     =  basis.create_singlet_triplet_basis_change_matrix_d_double(VS, d_Cu_double, double_Cu_part, idx_Cu, hole34_Cu_part)    
+    print("basis %s seconds ---" % (time.time() - start_time))    
+        
         
     if pam.if_print_VS_after_basis_change==1:
         basis.print_VS_after_basis_change(VS,S_val,Sz_val)
@@ -203,44 +212,45 @@ if __name__ == '__main__':
                     for epCu in pam.epCus:
                         for epNi in pam.epNis:   
                             for es in pam.ess: 
-                                for tz in pam.tzs:
-                                    for ANi in pam.ANis:
-                                        for ACu in pam.ACus:
-                #                            util.get_atomic_d8_energy(ANi,B,C)
-                                            for tpp in pam.tpps:
-                                                for Upp in pam.Upps:
-                                                    for Uss in pam.Upps:                    
-                                                        print ('===================================================')
-                                                        print ('ANi=',ANi, 'ACu=',ACu,'epCu=', epCu, 'epNi=',epNi,\
-                                                               ' tpd=',tpd,' tpp=',tpp,' Upp=',Upp,' Uss=',Uss)
+                                for tza1 in pam.tza1s:
+                                    for tzb1 in pam.tzb1s:
+                                        for ANi in pam.ANis:
+                                            for ACu in pam.ACus:
+                    #                            util.get_atomic_d8_energy(ANi,B,C)
+                                                for tpp in pam.tpps:
+                                                    for Upp in pam.Upps:
+                                                        for Uss in pam.Upps:                    
+                                                            print ('===================================================')
+                                                            print ('ANi=',ANi, 'ACu=',ACu,'epCu=', epCu, 'epNi=',epNi,\
+                                                                   ' tpd=',tpd,' tpp=',tpp,' Upp=',Upp,' Uss=',Uss)
 
-                                                        compute_Aw_main(ANi,ACu,epCu,epNi,es,tpd,tpp,tds,tps,tz,0,0,0,0,Upp,\
-                                                                        d_Ni_double,d_Cu_double,p_double,s_double,double_Ni_part,hole34_Ni_part,\
-                                                                        double_Cu_part,hole34_Cu_part, idx_Ni,idx_Cu, \
-                                                                        U_Ni, S_Ni_val, Sz_Ni_val, AorB_Ni_sym ,U_Cu, \
-                                                                        S_Cu_val, Sz_Cu_val, AorB_Cu_sym)  
+                                                            compute_Aw_main(ANi,ACu,epCu,epNi,es,tpd,tpp,tds,tps,tza1,tzb1,0,0,0,0,Upp,\
+                                                                            d_Ni_double,d_Cu_double,p_double,s_double,double_Ni_part,hole34_Ni_part,\
+                                                                            double_Cu_part,hole34_Cu_part, idx_Ni,idx_Cu, \
+                                                                            U_Ni, S_Ni_val, Sz_Ni_val, AorB_Ni_sym ,U_Cu, \
+                                                                            S_Cu_val, Sz_Cu_val, AorB_Cu_sym)  
     elif Norb==10 or Norb==11 or Norb==12:
         pps = pam.pps
         ppp = pam.ppp
-        for a in range(0,len(pam.tzs)):
-            tz = pam.tzs[a]                                        
-            for ii in range(0,len(pam.pdps)):
-                pds = pam.pdss[ii]
-                pdp = pam.pdps[ii]
-                for epCu in pam.epCus:
-                    for epNi in pam.epNis:
-                        for ANi in pam.ANis: 
-                            for ACu in pam.ACus:
-    #                         util.get_atomic_d8_energy(ANi,B,C)
-                                for Upp in pam.Upps:
-                                    print ('===================================================')
-                                    print ('ANi=',ANi, 'ACu=',ACu,'epCu=',epCu, 'epNi=',epNi,' pds=',pds,\
-                                           ' pdp=',pdp,' pps=',pps,' ppp=',ppp,' Upp=',Upp,'tz=',tz)
-                                    compute_Aw_main(ANi,ACu,epCu,epNi,es,0,0,tz,pds,pdp,pps,ppp,Upp,\
-                                                   d_Ni_double,d_Cu_double,p_double,double_Ni_part,hole34_Ni_part,\
-                                                   double_Cu_part,hole34_Cu_part,idx_Ni,idx_Cu,\
-                                                   U_Ni, S_Ni_val, Sz_Ni_val, AorB_Ni_sym ,U_Cu, \
-                                                    S_Cu_val, Sz_Cu_val, AorB_Cu_sym) 
+        for tza1 in pam.tza1s:
+            for tzb1 in pam.tzb1s:                        
+                for ii in range(0,len(pam.pdps)):
+                    pds = pam.pdss[ii]
+                    pdp = pam.pdps[ii]
+                    for epCu in pam.epCus:
+                        for epNi in pam.epNis:
+                            for ANi in pam.ANis: 
+                                for ACu in pam.ACus:
+        #                         util.get_atomic_d8_energy(ANi,B,C)
+                                    for Upp in pam.Upps:
+                                        print ('===================================================')
+                                        print ('ANi=',ANi, 'ACu=',ACu,'epCu=',epCu, 'epNi=',epNi,' pds=',pds,\
+                                               ' pdp=',pdp,' pps=',pps,' ppp=',ppp,' Upp=',Upp,'tz=',tz)
+                                        compute_Aw_main(ANi,ACu,epCu,epNi,es,0,0,tz,pds,pdp,pps,ppp,Upp,\
+                                                       d_Ni_double,d_Cu_double,p_double,double_Ni_part,hole34_Ni_part,\
+                                                       double_Cu_part,hole34_Cu_part,idx_Ni,idx_Cu,\
+                                                       U_Ni, S_Ni_val, Sz_Ni_val, AorB_Ni_sym ,U_Cu, \
+                                                        S_Cu_val, Sz_Cu_val, AorB_Cu_sym) 
 
                         
     print("--- %s seconds ---" % (time.time() - start_time))

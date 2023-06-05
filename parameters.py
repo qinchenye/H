@@ -2,24 +2,37 @@ import math
 import numpy as np
 M_PI = math.pi
 
-Mc =2
+Mc = 2
 
 # Note that Ni-d and O-p orbitals use hole language
-# while Nd orbs use electron language
-edCu = {'d3z2r2': 0.0,\
+# ed = {'d3z2r2': 0.0,\
+#       'dx2y2' : 0.0,\
+#       'dxy'   : 0.0,\
+#       'dxz'   : 0.0,\
+#       'dyz'   : 0.0}
+
+edCu = {'d3z2r2': 1.97,\
         'dx2y2' : 0.0,\
-        'dxy'   : 0.0,\
-        'dxz'   : 0.0,\
-        'dyz'   : 0.0}
+        'dxy'   : 1.53,\
+        'dxz'   : 1.6,\
+        'dyz'   : 1.6}
+
+# after adding H
+edCu = {'d3z2r2': 0.35,\
+        'dx2y2' : 0.0,\
+        'dxy'   : 1.55,\
+        'dxz'   : 1.9,\
+        'dyz'   : 1.9}
+
 edNi = edCu
 
-epNis = np.arange(7.00, 7.06, 10.0)
-epCus = np.arange(7.0, 7.76, 10.0)
+epNis = np.arange(4.7, 4.71, 1.0)
+epCus = epNis
 
-ess = np.arange(4.00, 4.06, 10.0)
+ess = np.arange(4.8, 4.81, 1.0)
 
 ANis = np.arange(6.0, 6.01, 1.0)
-ACus = np.arange(6.0, 6.01, 1.0)
+ACus = ANis
 
 B = 0.15
 C = 0.58
@@ -40,7 +53,7 @@ if Norb==8 or Norb==5:
     #tpds = [0.00001]  # for check_CuO4_eigenvalues.py
     tpds = np.linspace(1.3, 1.3, num=1, endpoint=True) #[0.25]
 #     tpds = [0.01]
-    tpps = [0.55]
+    tpps = [0.5]
 elif Norb==9 or Norb==11:    
     # pdp = sqrt(3)/4*pds so that tpd(b2)=tpd(b1)/2: see Eskes's thesis and 1990 paper
     # the values of pds and pdp between papers have factor of 2 difference
@@ -60,12 +73,14 @@ elif Norb==9 or Norb==11:
 #     pps = 0.01
 #     ppp = 0.01
 
-tzs =np.arange(0.0,9.01,140)  
+tzb1s = np.arange(0.3, 0.31, 1.0)  
+tza1s = np.arange(0.36, 0.37, 1.0)  
 
-tdss = [1.6]
-tpss = [0.6]
-
-if_tz_exist = 1
+tdss = [1.63]
+#tdss = np.linspace(3.6, 3.7, num=11, endpoint=True)
+tpss = [0.58]
+    
+if_tz_exist = 2
     #if if_tz_exist = 0,tz exist in all orbits.
     #if if_tz_exist = 1,tz exist in d orbits.
     #if if_tz_exist = 2,tz exist in d3z2r2 orbits.    
@@ -75,7 +90,7 @@ eta = 0.1
 Lanczos_maxiter = 600
 
 # restriction on variational space
-reduce_VS = 0
+reduce_VS = 1
 
 if_H0_rotate_byU = 1
 basis_change_type = 'd_double' # 'all_states' or 'd_double'

@@ -246,54 +246,54 @@ def set_tds_tps(Norb,tds,tps):
     
     
     
-def set_tz(Norb,if_tz_exist,tz):                            #条件Ni向下
+def set_tz(Norb,if_tz_exist,tza1,tzb1):                            #条件Ni向下
     
     if pam.Norb==5:
         if if_tz_exist == 0: 
-            tz_fac ={('px','px'):  tz,\
-                     ('py','py'):  tz,\
-                     ('d3z2r2','d3z2r2'):  1.2*tz,\
-                     ('dx2y2', 'dx2y2'):  tz}
+            tz_fac ={('px','px'):  tzb1,\
+                     ('py','py'):  tzb1,\
+                     ('d3z2r2','d3z2r2'):  tza1,\
+                     ('dx2y2', 'dx2y2'):  tzb1}
         if if_tz_exist == 1: 
-            tz_fac ={('d3z2r2','d3z2r2'):  1.2*tz,\
-                     ('dx2y2', 'dx2y2'):  tz}   
+            tz_fac ={('d3z2r2','d3z2r2'):  tza1,\
+                     ('dx2y2', 'dx2y2'):  tzb1}   
         if if_tz_exist == 2: 
-            tz_fac ={('d3z2r2','d3z2r2'):  1.2*tz}        
+            tz_fac ={('d3z2r2','d3z2r2'):  tzb1}        
     
     
     if pam.Norb==8:
         if if_tz_exist == 0: 
-            tz_fac ={('px','px'):  tz,\
-                     ('py','py'):  tz,\
-                     ('d3z2r2','d3z2r2'):  1.2*tz,\
-                     ('dx2y2', 'dx2y2'):  tz,\
-                     ('dxy',   'dxy'):  tz}
+            tz_fac ={('px','px'):  tzb1,\
+                     ('py','py'):  tzb1,\
+                     ('d3z2r2','d3z2r2'):  tza1,\
+                     ('dx2y2', 'dx2y2'):  tzb1,\
+                     ('dxy',   'dxy'):  tzb1}
         if if_tz_exist == 1: 
-            tz_fac ={('d3z2r2','d3z2r2'):  1.2*tz,\
-                     ('dx2y2', 'dx2y2'):  tz,\
-                     ('dxy',   'dxy'):  tz}   
+            tz_fac ={('d3z2r2','d3z2r2'):  tza1,\
+                     ('dx2y2', 'dx2y2'):  tzb1,\
+                     ('dxy',   'dxy'):  tzb1}   
         if if_tz_exist == 2: 
-            tz_fac ={('d3z2r2','d3z2r2'):  1.2*tz}               
+            tz_fac ={('d3z2r2','d3z2r2'):  tza1}               
             
             
     if pam.Norb==10:
-        tz_fac ={('px1','px1'):  tz,\
-                 ('px2','px2'):  tz,\
-                 ('py1','py1'):  tz,\
-                 ('py2','py2'):  tz,\
-                 ('d3z2r2','d3z2r2'):  1.2*tz,\
-                 ('dx2y2', 'dx2y2'):  tz,\
-                 ('dxy',   'dxy'):  tz}
+        tz_fac ={('px1','px1'):  tzb1,\
+                 ('px2','px2'):  tzb1,\
+                 ('py1','py1'):  tzb1,\
+                 ('py2','py2'):  tzb1,\
+                 ('d3z2r2','d3z2r2'):  tza1,\
+                 ('dx2y2', 'dx2y2'):  tzb1,\
+                 ('dxy',   'dxy'):  tzb1}
     if pam.Norb==12:
-        tz_fac ={('px1','px1'):  tz,\
-                 ('px2','px2'):  tz,\
-                 ('py1','py1'):  tz,\
-                 ('py2','py2'):  tz,\
-                 ('pz1','pz1'): -1.2*tz,\
-                 ('pz2','pz2'): -1.2*tz,\
-                 ('d3z2r2','d3z2r2'):  1.2*tz,\
-                 ('dx2y2', 'dx2y2'):  tz,\
-                 ('dxy',   'dxy'):  tz}
+        tz_fac ={('px1','px1'):  tzb1,\
+                 ('px2','px2'):  tzb1,\
+                 ('py1','py1'):  tzb1,\
+                 ('py2','py2'):  tzb1,\
+                 ('pz1','pz1'): -tza1,\
+                 ('pz2','pz2'): -tza1,\
+                 ('d3z2r2','d3z2r2'):  tza1,\
+                 ('dx2y2', 'dx2y2'):  tzb1,\
+                 ('dxy',   'dxy'):  tzb1}
         
     return tz_fac
     
@@ -1470,7 +1470,8 @@ def create_interaction_matrix_ALL_syms(VS,d_double,p_double,s_double,double_part
                 # ('dyz','dyz') is degenerate with ('dxz','dxz') for D4h 
                 if o34==('dyz','dyz'):
                     idx2 -= 1
-
+                    
+                #exist in sym_orbs,No need for these tracks
                 if pam.Norb == 5:    
                     if o34==('dyz','dyz') or o34==('dxz','dxz') or o34==('dxy','dxy') or o34==('d3z2r2','dxy') or o34==('dx2y2','dxy') or \
                       o34==('d3z2r2','dxz') or o34==('dx2y2','dxz') or o34==('dxy','dxz') or o34==('d3z2r2','dyz') or o34==('dx2y2','dyz') \
@@ -1534,7 +1535,7 @@ def create_interaction_matrix_ALL_syms(VS,d_double,p_double,s_double,double_part
         for i in p_double:
             data.append(Upp); row.append(i); col.append(i)
     if Uss!=0:
-        for i in p_double:
+        for i in s_double:
             data.append(Upp); row.append(i); col.append(i)            
             
 
