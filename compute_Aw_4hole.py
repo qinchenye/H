@@ -14,7 +14,8 @@ import shutil
 import parameters as pam
 import lattice as lat
 import variational_space as vs
-import hamiltonian as ham
+# import hamiltonian as ham
+import hamiltonian_d10_U_2 as ham
 import basis_change as basis
 import get_state as getstate
 import utility as util
@@ -56,10 +57,10 @@ def compute_Aw_main(ANi,ACu,epCu,epNi,es,tpd,tpp,tds,tps,tza1,tzb1,pds,pdp,pps,p
         tpd_nn_hop_dir, tpd_orbs, tpd_nn_hop_fac, tpp_nn_hop_fac \
                                    = ham.set_tpd_tpp(Norb,0,0,pds,pdp,pps,ppp)
         
-    if Norb==5:  
-        tds_nn_hop_dir, tds_orbs, tds_nn_hop_fac, tps_nn_hop_dir, tps_orbs, tps_nn_hop_fac \
-                                   = ham.set_tds_tps(Norb,tds,tps)
-    
+
+    tds_nn_hop_dir, tds_orbs, tds_nn_hop_fac, tps_nn_hop_dir, tps_orbs, tps_nn_hop_fac \
+                               = ham.set_tds_tps(Norb,tds,tps)
+
 #     tz_fac = ham.set_tz(Norb,if_tz_exist,tz)
     
     tz_fac = ham.set_tz(Norb,if_tz_exist,tza1,tzb1)

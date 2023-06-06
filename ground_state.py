@@ -182,11 +182,7 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val):
         allwgts = abs(vecs[:,k])**2
         ilead = np.argsort(-allwgts)   # argsort returns small value first by default
             
-        wgt_d8_b1b1 = 0.0; wgt_d8_other = 0.0
-        wgt_b1L = 0.0; wgt_b1Lp = 0.0; wgt_d9L_other = 0.0
-        wgt_b1H = 0.0; wgt_a1H = 0.0;
-        wgt_d10L2 = 0.0; wgt_d10L2p = 0.0
-        wgt_Lp = 0.0; wgt_ep = 0.0
+
         total = 0
 
         print ("Compute the weights in GS (lowest Aw peak)")
@@ -244,13 +240,13 @@ def get_ground_state(matrix, VS, S_Ni_val, Sz_Ni_val, S_Cu_val, Sz_Cu_val):
             s3 = slabel[10]; orb3 = slabel[11]; x3 = slabel[12]; y3 = slabel[13]; z3 = slabel[14];
             s4 = slabel[15]; orb4 = slabel[16]; x4 = slabel[17]; y4 = slabel[18]; z4 = slabel[19];     
             
-            if i in indices[0]: 
+            if weight > 0.01:
                 sumweight1=sumweight1+abs(vecs[i,k])**2
                 print (' state ', istate, ' ',orb1,s1,x1,y1,z1,' ',orb2,s2,x2,y2,z2,' ',orb3,s3,x3,y3,z3,' ',orb4,s4,x4,y4,z4,\
                    '\n S_Ni=', S_Ni_12, ',  Sz_Ni=', Sz_Ni_12, \
                    ',  S_Cu=', S_Cu_12, ',  Sz_Cu=', Sz_Cu_12, \
                    ", weight = ", weight,'\n')   
-                
+
                 
             if (orb1 in pam.O_orbs) and  (orb2 in pam.O_orbs)  and  (orb3 in pam.O_orbs)  and  (orb4 in pam.O_orbs):
                 wgt_LmLn[0]+=abs(vecs[istate,k])**2 
